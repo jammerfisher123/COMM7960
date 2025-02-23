@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-MTF-德尔塔协议模拟器">
+    <style>
+        :root {
+
+            --red-alert: #d32f2f;
+
+            --console-bg: #0a0a0a;
+
+            --text-glitch: #0ff;
+
+            --terminal-green: #00ff00;
+        }
+
+        body {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkYGD4D8SMQAwGqhgABhgBAfAEQqIiABX6ACXcR3XJAAAAAElFTkSuQmCC'),
+                        linear-gradient(45deg, #001 0%, #000 100%);
+            color: var(--terminal-green);
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* 破损屏幕效果 */
+        .crt-effect::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.2) 50%),
+                        linear-gradient(90deg, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.2) 50%);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* 多站点联合作战界面 */
+        .multi-site-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            padding: 2rem;
+            height: 90vh;
+        }
+
+        /* 主指挥面板 */
+        .command-panel {
+            border: 3px solid var(--red-alert);
+            padding: 2rem;
+            background: rgba(0,30,0,0.9);
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,255,0,0.1);
+        }
+
+        /* 动态威胁地图 */
+        .threat-map {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            height: 300px;
+            position: relative;
+        }
+
+        .map-sector {
+            border: 1px solid var(--terminal-green);
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scp-entity {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--red-alert);
+            border-radius: 50%;
+            transition: all 2s linear;
+        }
+
+        /* 协议选择系统 */
+        .protocol-tree {
+            border-left: 3px solid var(--terminal-green);
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+
+        .protocol-node {
+            margin: 1rem 0;
+            padding: 1rem;
+            border: 1px solid rgba(0,255,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .protocol-node:hover {
+            background: rgba(0,255,0,0.1);
+            transform: translateX(10px);
+        }
+
+        /* 跨站点状态面板 */
+        .site-status {
+            border: 2px solid var(--terminal-green);
+            padding: 1rem;
+            background: rgba(0,20,0,0.8);
+        }
+
+        .status-bar {
+            height: 15px;
+            background: #002200;
+            margin: 0.5rem 0;
+            position: relative;
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0c0, #0f0);
+            transition: width 0.5s;
+        }
+
+        /* 经典SCP元素 */
+        .scp-class {
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            padding: 5px 10px;
+            background: var(--red-alert);
+            color: white;
+            transform: rotate(15deg);
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body class="crt-effect">
+    <div class="multi-site-grid">
+        <!-- 主指挥界面 -->
+        <div class="command-panel">
+            <div class="scp-class">KETER</div>
+            <h2>Δ级收容失效协议 - 紧急事件</h2>
+            
+            <div class="threat-map" id="threatMap">
+                <div class="map-sector" data-sector="A">
+                    Site-23 ██区
+                    <div class="scp-entity" data-scp="682" style="left: 30%; top: 40%"></div>
+                </div>
+                <!-- 其他区域... -->
+            </div>
+
+            <div class="protocol-tree" id="decisionTree">
+                <div class="protocol-node" data-path="1" onclick="selectProtocol(1)">
+                    [协议A9] 启动模因接种程序（需3级权限）
+                </div>
+                <div class="protocol-node" data-path="2" onclick="selectProtocol(2)">
+                    [协议Γ3] 部署SCP-076-2进行拦截
+                </div>
+                <div class="protocol-node" data-path="3" onclick="selectProtocol(3)">
+                    [协议Ω7] 请求Site-15的SCP-217改造体支援
+                </div>
+            </div>
+        </div>
+
+        <!-- 跨站点状态监控 -->
+        <div class="site-status">
+            <h3>全球收容状态</h3>
+            <div>Site-23 完整性:
+                <div class="status-bar">
+                    <div class="status-fill" style="width: 85%"></div>
+                </div>
+            </div>
+            <div>Site-15 响应状态:
+                <div class="status-bar">
+                    <div class="status-fill" style="width: 45%"></div>
+                </div>
+            </div>
+            <div id="mtf-status">
+                MTF Ω-7 ("熊猫人") 部署进度: 20%
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 复杂事件树
+        const scenarioTree = {
+            1: {
+                outcome: {
+                    containment: -15,
+                    casualties: 20,
+                    text: `[模因疫苗已分发] SCP-106开始渗透至██区... 
+                           选择反制措施:`,
+                    branches: {
+                        11: "激活SCP-148屏障",
+                        12: "部署SCP-263时空稳定器",
+                        13: "启动记忆删除风暴"
+                    }
+                }
+            },
+            2: {
+                outcome: {
+                    containment: +30,
+                    casualties: 60,
+                    text: `[076-2部署成功] SCP-682开始进化... 
+                           选择后续协议:`,
+                    branches: {
+                        21: "注入SCP-500样本",
+                        22: "使用SCP-409结晶化",
+                        23: "申请SCP-294饮品"
+                    }
+                }
+            },
+            3: {
+                outcome: {
+                    containment: +10,
+                    casualties: 35,
+                    text: `[217改造体抵达] 检测到模因污染... 
+                           选择净化协议:`,
+                    branches: {
+                        31: "执行逆模因清洗",
+                        32: "启动现实重构协议",
+                        33: "激活SCP-2000"
+                    }
+                }
+            }
+        };
+
+        // 增强型交互系统
+        function selectProtocol(path) {
+            const outcome = scenarioTree[path].outcome;
+            updateGlobalStatus(outcome);
+            
+            const decisionTree = document.getElementById('decisionTree');
+            decisionTree.innerHTML = Object.entries(outcome.branches).map(([key, text]) => `
+                <div class="protocol-node" data-path="${key}" onclick="selectProtocol(${key})">
+                    [协议${getProtocolCode(key)}] ${text}
+                </div>
+            `).join('');
+
+            animateSCPMovement();
+        }
+
+        // 经典SCP联动系统
+        function updateGlobalStatus(outcome) {
+            // 模拟跨站点影响
+            document.querySelectorAll('.status-fill').forEach(bar => {
+                const currentWidth = parseFloat(bar.style.width);
+                bar.style.width = `${Math.max(0, currentWidth + outcome.containment)}%`;
+            });
+
+            // 触发特殊事件
+            if(outcome.containment < -20) {
+                initiateCrossTest(106, 682);
+            }
+        }
+
+        // SCP实体动态模拟
+        function animateSCPMovement() {
+            const entities = document.querySelectorAll('.scp-entity');
+            entities.forEach(entity => {
+                entity.style.left = `${Math.random()*90}%`;
+                entity.style.top = `${Math.random()*90}%`;
+            });
+        }
+
+        // 更多经典元素...
+        function initiateCrossTest(scp1, scp2) {
+            console.warn(`启动交叉测试 ${scp1}-${scp2}`);
+            document.body.style.backgroundColor = '#200';
+            alert(`警告：${scp1}与${scp2}发生异常互动！`);
+        }
+
+        function getProtocolCode(num) {
+            const codes = ['Γ','Δ','Θ','Λ','Ξ','Π','Σ','Φ','Ψ','Ω'];
+            return codes[num % codes.length] + (num % 9 +1);
+        }
+    </script>
+    @media (max-width: 768px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+            padding: 10px;
+        }
+        
+        .status-panel {
+            order: -1;
+            margin-bottom: 20px;
+        }
+    }
+</body>
+</html>

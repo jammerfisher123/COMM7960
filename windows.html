@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访问授权 - 请等待数据加载完成</title>
+    <style>
+        /* Windows 11 官方配色 */
+        :root {
+            --win-blue: #0078D4;      /* 微软官方主题色 */
+            --win-bg: #000000;        /* 纯黑背景 */
+            --win-text: #FFFFFF;      /* 白色文字 */
+            --win-gray: #2D2D2D;      /* 进度条背景灰 */
+            --win-blue-dim: #005A9E;  /* 深蓝辅助色 */
+        }
+
+        body {
+            margin: 0;
+            background: var(--win-bg);
+            color: var(--win-text);
+            font-family: 'Segoe UI', 'Microsoft Yahei', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+
+        /* 进度容器 */
+        .update-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin-bottom: 40px;
+        }
+
+        /* 动态进度环 */
+        .progress-ring circle.progress {
+            stroke: var(--win-blue);
+            transition: stroke-dashoffset 0.5s ease-out;
+        }
+
+        /* 拟真进度条 */
+        .windows-progress {
+            width: 450px;
+            height: 4px;
+            background: 
+                linear-gradient(
+                    90deg,
+                    var(--win-blue) 45%,
+                    var(--win-blue-dim) 55%,
+                    var(--win-blue) 65%
+                );
+            background-size: 200% 100%;
+            animation: progress-glow 2s linear infinite;
+            border-radius: 2px;
+            margin: 20px 0;
+        }
+
+        @keyframes progress-glow {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* 状态消息 */
+        .status-messages {
+            text-align: center;
+            max-width: 600px;
+            margin-top: 30px;
+        }
+
+        /* 系统警告图标 */
+        .shield-icon {
+            width: 48px;
+            height: 48px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230078D4" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h5V18H7v-6.01h5zM12 8l3 3h-2v4h-2v-4H9l3-3z"/></svg>');
+            margin: 0 auto 20px;
+        }
+
+        /* 阶段提示动画 */
+        .phase-message {
+            opacity: 0;
+            animation: phase-appear 1s forwards;
+            margin: 8px 0;
+        }
+
+        @keyframes phase-appear {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="update-container">
+        <svg class="progress-ring" width="320" height="320">
+            <circle cx="160" cy="160" r="150" fill="none" stroke="#2D2D2D" stroke-width="8"/>
+            <circle class="progress" cx="160" cy="160" r="150" fill="none" stroke-width="8"
+                    stroke-dasharray="942" stroke-dashoffset="942"/>
+        </svg>
+        <div class="status-text">
+            <div id="percentage" style="font-size: 2.5em; font-weight: 300">0%</div>
+            <div style="margin-top: 8px; opacity: 0.8">正在准备更新</div>
+        </div>
+    </div>
+
+    <div class="windows-progress"></div>
+
+    <div class="status-messages">
+        <div class="shield-icon"></div>
+        <h2 style="font-weight: 300">正在加载数据</h2>
+        <p style="opacity: 0.8">版本 23H2 - 19045.3803</p>
+        
+        <div id="phase-container" style="margin-top: 25px;">
+            <div class="phase-message">正在初始化系统服务...</div>
+            <div class="phase-message">验证密钥完整性</div>
+            <div class="phase-message">正在配置系统注册表</div>
+        </div>
+    </div>
+
+    <script>
+        // 拟真进度模拟
+        let currentProgress = 0;
+        const progressCircle = document.querySelector('.progress');
+        const percentageElement = document.getElementById('percentage');
+        const phaseContainer = document.getElementById('phase-container');
+        const messages = [
+            "正在解密系统文件",
+            "优化内存分配方案",
+            "检查驱动程序兼容性",
+            "准备系统恢复点",
+            "验证数字签名",
+            "正在重组系统组件"
+        ];
+
+        function updateProgress() {
+            if(currentProgress < 100) {
+                // 随机进度增量
+                const increment = Math.random() * (currentProgress > 90 ? 0.3 : 1.5);
+                currentProgress = Math.min(currentProgress + increment, 100);
+                
+                // 更新环形进度
+                const offset = 942 - (942 * currentProgress / 100);
+                progressCircle.style.strokeDashoffset = offset;
+                
+                // 更新百分比显示
+                percentageElement.textContent = `${Math.floor(currentProgress)}%`;
+                
+                // 添加阶段提示
+                if(Math.random() < 0.3 && messages.length > 0) {
+                    const newPhase = document.createElement('div');
+                    newPhase.className = 'phase-message';
+                    newPhase.textContent = messages.shift();
+                    phaseContainer.appendChild(newPhase);
+                }
+
+                // 随机延迟 (800-1200ms)
+                setTimeout(updateProgress, 800 + Math.random() * 400);
+            } else {
+                // 进度完成后保持动画
+                document.querySelector('.windows-progress').style.animation = 'none';
+            }
+        }
+
+        // 启动进度模拟
+        setTimeout(updateProgress, 1500);
+
+        // 动态标题闪烁
+        let originalTitle = document.title;
+        setInterval(() => {
+            document.title = document.title.includes('▒') 
+                ? originalTitle 
+                : '▒ ' + originalTitle;
+        }, 600);
+    </script>
+</body>
+</html>

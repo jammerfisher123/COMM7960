@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8-MTF-Ω级访问协议">
+    <title>SCP基金会 - 人员管理系统</title>
+    <style>
+        /* 核心视觉系统 */
+        :root {
+            --console-bg: #0a0a0a;
+            --terminal-green: #00ff00;
+            --clearance-red: #ff4444;
+            --d-class-orange: #ff8800;
+            --containment-blue: #0099ff;
+            --memetic-purple: #aa00ff;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 50%, 
+                      rgba(0,30,0,0.9) 0%, 
+                      rgba(0,15,0,0.95) 100%),
+                    url('data:image/png;base64,iVBORw0KG...');
+            color: var(--terminal-green);
+            font-family: 'Consolas', '等距更纱黑体 SC', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 三维人员网格系统 */
+        .personnel-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr 400px;
+            gap: 20px;
+            padding: 2rem;
+            height: 95vh;
+        }
+
+        /* 生物特征识别面板 */
+        .bio-security {
+            border-right: 3px solid var(--containment-blue);
+            padding: 2rem;
+            position: relative;
+        }
+
+        .retina-scanner {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.7);
+            border: 3px solid var(--terminal-green);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 动态人员数据库 */
+        .personnel-db {
+            background: rgba(0,20,0,0.9);
+            border: 3px solid var(--terminal-green);
+            padding: 2rem;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* 人员状态指示系统 */
+        .status-indicators {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: rgba(0,30,0,0.8);
+            border: 2px solid var(--d-class-orange);
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        /* 实时定位系统 */
+        .facility-map {
+            height: 400px;
+            background: rgba(0,0,0,0.5);
+            position: relative;
+            border: 3px solid var(--memetic-purple);
+        }
+
+        .person-marker {
+            width: 20px;
+            height: 20px;
+            background: var(--terminal-green);
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+        }
+
+        /* 记忆管理界面 */
+        .mnestic-admin {
+            border: 3px solid var(--memetic-purple);
+            padding: 1rem;
+            background: rgba(30,0,30,0.9);
+            height: 100%;
+        }
+
+        /* 安保协议面板 */
+        .security-protocol {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* 动态特效 */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0,255,0,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0,255,0,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,255,0,0); }
+        }
+
+        @keyframes lockdown {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+    </style>
+</head>
+<body class="crt-effect">
+    <div class="personnel-grid">
+        <!-- 生物识别侧栏 -->
+        <div class="bio-security">
+            <div class="retina-scanner" id="retinaScanner">
+                <div class="laser-grid"></div>
+            </div>
+            
+            <div class="clearance-level">
+                <h3>当前权限等级：3级</h3>
+                <div class="clearance-progress">
+                    <div class="progress-bar" style="width: 75%"></div>
+                </div>
+            </div>
+
+            <div class="security-protocol">
+                <div class="protocol-card" data-protocol="epsilon">
+                    <h4>ε级安保协议</h4>
+                    <div class="protocol-status active"></div>
+                </div>
+                <!-- 更多协议... -->
+            </div>
+        </div>
+
+        <!-- 主数据库界面 -->
+        <div class="personnel-db">
+            <div class="status-indicators">
+                <div class="status-card">
+                    <h4>在岗人员</h4>
+                    <div class="status-value">Agent X. Donovan Blake</div>
+                </div>
+                <div class="status-card">
+                    <h4>D级人员</h4>
+                    <div class="status-value">Quentin Blackthorn</div>
+                </div>
+                <div class="status-card">
+                    <h4>KIA本月</h4>
+                    <div class="status-value">Z. Atticus Grimm</div>
+                </div>
+            </div>
+
+            <div class="personnel-list">
+                <div class="personnel-item clearance-4">
+                    <div class="person-badge">Dr. █████</div>
+                    <div class="person-meta">
+                        <span class="meta-tag security">安保3级</span>
+                        <span class="meta-tag clearance">权限4级</span>
+                    </div>
+                    <div class="person-actions">
+                        <button class="mem-admin" onclick="initiateMnestic(this)">记忆管理</button>
+                    </div>
+                </div>
+                <!-- 更多人员条目... -->
+            </div>
+        </div>
+
+        <!-- 实时监控面板 -->
+        <div class="facility-monitor">
+            <div class="facility-map" id="facilityMap">
+                <div class="person-marker" style="left: 30%; top: 40%"></div>
+            </div>
+            
+            <div class="mnestic-admin">
+                <h3>记忆管理终端</h3>
+                <div class="mnestic-controls">
+                    <div class="control-group">
+                        <label>记忆剂量：</label>
+                        <input type="range" min="0" max="100" value="50">
+                    </div>
+                    <button class="purge-button" onclick="executePurge()">执行记忆删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 三维生物识别系统
+        class BioScanner {
+            constructor() {
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.scanner = document.getElementById('retinaScanner');
+                this.init();
+            }
+
+            init() {
+                this.canvas.width = 300;
+                this.canvas.height = 200;
+                this.scanner.appendChild(this.canvas);
+                this.animate();
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                this.ctx.fillRect(0, 0, 300, 200);
+                
+                // 生成扫描线效果
+                for(let i=0; i<10; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, Math.random()*200);
+                    this.ctx.lineTo(300, Math.random()*200);
+                    this.ctx.strokeStyle = 'rgba(0,255,0,0.3)';
+                    this.ctx.stroke();
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // 记忆删除协议系统
+        function executePurge() {
+            const dosage = document.querySelector('input[type="range"]').value;
+            const effects = {
+                30: '短期记忆清除',
+                60: '事件相关记忆删除',
+                100: '完全人格重置'
+            };
+
+            document.body.style.animation = 'lockdown 1s infinite';
+            new Audio('data:audio/wav;base64,SUQzBAAAAA...').play();
+            
+            alert(`执行${effects[dosage]}协议...`);
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 3000);
+        }
+
+        // 实时定位系统
+        class PersonnelTracker {
+            constructor() {
+                this.markers = Array.from(document.querySelectorAll('.person-marker'));
+                this.interval = setInterval(() => this.updatePositions(), 2000);
+            }
+
+            updatePositions() {
+                this.markers.forEach(marker => {
+                    marker.style.left = `${Math.random()*90}%`;
+                    marker.style.top = `${Math.random()*90}%`;
+                });
+            }
+        }
+
+        // 初始化系统
+        document.addEventListener('DOMContentLoaded', () => {
+            new BioScanner();
+            new PersonnelTracker();
+            
+            // 权限验证系统
+            setInterval(() => {
+                if(Math.random() < 0.2) {
+                    document.body.style.backgroundColor = '#300';
+                    alert('检测到未授权访问！');
+                    window.location.href = 'data:text/html,<h1>SECURITY PURGE INITIATED</h1>';
+                }
+            }, 10000);
+        });
+    </script>
+    
+</body>
+</html>

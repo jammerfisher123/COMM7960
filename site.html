@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP基金会 - Site-23</title>
+    <style>
+        /* 基础样式 */
+        :root {
+            --accent-red: #c00000;
+            --dark-bg: #1a1a1a;
+            --text-dark: #333;
+            --text-light: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Noto Sans CJK SC', sans-serif;
+        }
+
+        body {
+            background: #ffffff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAMUlEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHA4A04AASxKZRwAAAAASUVORK5CYII=') repeat;
+            color: var(--text-dark);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* 增强型头部 */
+        .site-header {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            background: linear-gradient(to right, #fff, #f5f5f5);
+            border-radius: 8px;
+        }
+
+        .site-title {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 3.8rem;
+            color: var(--accent-red);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 增强安保状态指示器 */
+        .security-status {
+            position: absolute;
+            top: 15px;
+            right: 30px;
+            background: #fff;
+            padding: 8px 20px;
+            border: 2px solid var(--accent-red);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            color: var(--accent-red);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .security-status::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: status-pulse 1.5s infinite;
+        }
+
+        /* 增强导航系统 */
+        .nav-container {
+            background: #fff;
+            padding: 1rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .main-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .nav-item {
+            color: var(--text-dark);
+            text-decoration: none;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            background: #f9f9f9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-red);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: #fff;
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 12px rgba(192,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* 增强内容区块 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .content-block {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .content-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .block-title {
+            color: var(--accent-red);
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid var(--accent-red);
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        /* 增强快速访问卡片 */
+        .quick-access {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .access-card {
+            background: #f8f8f8;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid #eee;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .access-card:hover {
+            background: #fff;
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 12px rgba(192,0,0,0.08);
+        }
+
+        .access-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-red);
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .access-card:hover::after {
+            opacity: 0.15;
+        }
+
+        /* 新增权限指示系统 */
+        .clearance-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid var(--accent-red);
+            display: flex;
+            align-items: center;
+        }
+
+        .clearance-level {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            margin-right: 12px;
+            animation: clearance-pulse 2s infinite;
+        }
+
+        /* 新增紧急通知系统 */
+        .emergency-alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffebee;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+            box-shadow: 0 4px 12px rgba(192,0,0,0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        /* 新增数据可视化 */
+        .stats-graph {
+            height: 200px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-bar {
+            position: absolute;
+            bottom: 0;
+            height: 0;
+            width: 30px;
+            background: var(--accent-red);
+            transition: height 1s ease;
+        }
+
+        /* 动画增强 */
+        @keyframes status-pulse {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        @keyframes clearance-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(192,0,0,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(192,0,0,0); }
+            100% { box-shadow: 0 0 0 0 rgba(192,0,0,0); }
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                box-shadow: none;
+            }
+            
+            .site-title {
+                font-size: 2.5rem;
+            }
+            
+            .security-status {
+                position: static;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 新增紧急通知 -->
+    <div class="emergency-alert" id="emergencyAlert">
+        ⚠️ 检测到未经授权的访问尝试 - 安全协议已激活
+    </div>
+
+    <div class="container">
+        <!-- 增强头部 -->
+        <header class="site-header">
+            <div class="security-status">安保等级：4级 - 限制访问</div>
+            <h1 class="site-title">SITE-23</h1>
+            <p style="color: #666; font-size: 1.1rem;">西北太平洋主要收容设施 | 版本 23.11.5</p>
+        </header>
+
+        <!-- 增强导航 -->
+        <nav class="nav-container">
+            <div class="main-nav">
+                <a href="database.html" class="nav-item">
+                    <span style="color: var(--accent-red);">█</span> 项目数据库
+                </a>
+                <a href="containment.html" class="nav-item">
+                    <span style="color: var(--accent-red);">▣</span> 收容协议
+                </a>
+                <a href="research.html" class="nav-item">
+                    <span style="color: var(--accent-red);">⟁</span> 研究档案
+                </a>
+                <a href="personnel.html" class="nav-item">
+                    <span style="color: var(--accent-red);">⨀</span> 人员管理
+                </a>
+                <a href="windows.html" class="nav-item">
+                    <span style="color: var(--accent-red);">⏣</span> 安保系统
+                </a>
+                <a href="facilities.html" class="nav-item">
+                    <span style="color: var(--accent-red);">◈</span> 设施导航
+                </a>
+            </div>
+        </nav>
+
+        <!-- 新增权限指示 -->
+        <div class="clearance-indicator">
+            <div class="clearance-level"></div>
+            当前权限等级：3级
+        </div>
+
+        <!-- 增强内容区块 -->
+        <main class="content-grid">
+            <!-- 新增数据可视化 -->
+            <section class="content-block">
+                <h2 class="block-title">收容统计</h2>
+                <div class="stats-graph" id="containmentStats">
+                    <div class="graph-bar" style="left: 10%; width: 15%"></div>
+                    <div class="graph-bar" style="left: 30%; width: 15%"></div>
+                    <div class="graph-bar" style="left: 50%; width: 15%"></div>
+                </div>
+            </section>
+
+            <!-- 增强实时监控 -->
+            <section class="content-block">
+                <h2 class="block-title">系统监控</h2>
+                <div class="quick-access">
+                    <div class="access-card">
+                        <h3>现实稳定锚</h3>
+                        <div class="status-indicator active"></div>
+                        <p>输出功率：92%</p>
+                    </div>
+                    <div class="access-card">
+                        <h3>模因过滤</h3>
+                        <div class="status-indicator warning"></div>
+                        <p>检测到2个威胁</p>
+                        <p>检测到“第四面墙”损坏</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 新增实验排程 -->
+            <section class="content-block">
+                <h2 class="block-title">实验排程</h2>
+                <div class="schedule-timeline">
+                    <div class="timeline-event">
+                        <div class="event-time">09:00</div>
+                        <div class="event-desc">SCP-914 精加工测试</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="event-time">14:30</div>
+                        <div class="event-desc">SCP-682 耐受实验</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 增强页脚 -->
+        <footer style="margin-top: 3rem; padding: 2rem; background: #f8f8f8; border-radius: 8px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+                <div>
+                    <h4 style="color: var(--accent-red); margin-bottom: 1rem;">快速链接</h4>
+                    <ul style="list-style: none;">
+                        <li>事故报告协议</li>
+                        <li>跨站点通讯</li>
+                        <li>记忆删除指南</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent-red); margin-bottom: 1rem;">系统状态</h4>
+                    <ul style="list-style: none;">
+                        <li>收容单元：97% 正常</li>
+                        <li>人员定位：在线</li>
+                        <li>备用电源：待机</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent-red); margin-bottom: 1rem;">联系信息</h4>
+                    <ul style="list-style: none;">
+                        <li>站点主管：Dr. Z████</li>
+                        <li>紧急热线：23-59██-███</li>
+                        <li>加密频道：#site23-secure</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="liveClock" style="margin-top: 2rem; text-align: center; color: #666;"></div>
+        </footer>
+    </div>
+
+    <script>
+        // 增强紧急通知系统
+        const emergencyMessages = [
+            "⚠️ 检测到第III类认知危害 - 自动过滤已启动",
+            "🔒 安全锁定激活 - 移动受限",
+            "🚨 收容失效警报 - 启用紧急协议"
+        ];
+
+        function showRandomAlert() {
+            const alertBox = document.getElementById('emergencyAlert');
+            alertBox.textContent = emergencyMessages[Math.floor(Math.random()*emergencyMessages.length)];
+            alertBox.style.display = 'block';
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+        setInterval(showRandomAlert, 30000);
+
+        // 动态图表初始化
+        function initStats() {
+            const bars = document.querySelectorAll('.graph-bar');
+            bars.forEach(bar => {
+                const randomHeight = Math.floor(Math.random()*80 + 20);
+                bar.style.height = `${randomHeight}%`;
+            });
+        }
+        initStats();
+
+        createFluctuatingStats();
+        
+        // 增强时钟系统
+        function updateClock() {
+            const options = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            const timeString = new Date().toLocaleTimeString('zh-CN', options);
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const dateString = new Date().toLocaleDateString('zh-CN', dateOptions);
+            document.getElementById('liveClock').innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">${dateString}</div>
+                <div style="font-size: 2rem; font-weight: 300;">${timeString}</div>
+            `;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 交互增强
+        document.querySelectorAll('.access-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+    <script>
+// 动态内容加载系统
+function loadSection(sectionId) {
+    const contentBlocks = {
+        'database': `
+            <h2 class="block-title">SCP数据库</h2>
+            <div class="search-box">
+                <input type="text" placeholder="输入项目编号或关键词..." id="searchInput">
+                <button onclick="searchSCP()">搜索</button>
+            </div>
+            <div class="scp-table-container" id="scpTable"></div>
+        `,
+        'containment': `
+            <h2 class="block-title">收容协议库</h2>
+            <div class="protocol-list" id="protocolList"></div>
+        `
+    };
+    
+    document.getElementById('dynamicContent').innerHTML = contentBlocks[sectionId];
+    window.scrollTo(0, 0);
+}
+
+// SCP表格生成器
+function generateSCPTable() {
+    const scpData = [
+        {编号: 'SCP-173', 等级: 'Euclid', 状态: '已收容', 分类: '生物实体'},
+        {编号: 'SCP-914', 等级: 'Safe', 状态: '测试中', 分类: '机械装置'},
+        {编号: 'SCP-682', 等级: 'Keter', 状态: '收容失效', 分类: '逆模因'}
+    ];
+
+    let tableHTML = `
+        <table class="scp-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">项目编号 ▼</th>
+                    <th onclick="sortTable(1)">等级 ▼</th>
+                    <th onclick="sortTable(2)">状态 ▼</th>
+                    <th onclick="sortTable(3)">分类 ▼</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    scpData.forEach(item => {
+        tableHTML += `
+            <tr>
+                <td>${item.编号}</td>
+                <td><span class="label ${item.等级}">${item.等级}</span></td>
+                <td>${item.状态}</td>
+                <td>${item.分类}</td>
+                <td>
+                    <button class="btn-details" onclick="showDetail('${item.编号}')">查看详情</button>
+                    <button class="btn-report" onclick="generateReport('${item.编号}')">生成报告</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `</tbody></table>`;
+    document.getElementById('scpTable').innerHTML = tableHTML;
+}
+
+// 详情模态框
+function showDetail(scpNumber) {
+    const modal = document.createElement('div');
+    modal.className = 'scp-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+            <h3>${scpNumber} - 项目档案</h3>
+            <div class="classified-content">
+                <p>项目等级：<span class="classified">███</span></p>
+                <p>特殊收容措施：<span class="classified">需3级权限</span></p>
+                <button onclick="requestAccess('${scpNumber}')">请求临时权限</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+</script>
+
+<style>
+/* 新增交互样式 */
+.scp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.scp-table th, .scp-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.scp-table th {
+    background: #f8f8f8;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.scp-table th:hover {
+    background: #f0f0f0;
+}
+
+.label {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.label.Safe { background: #e8f5e9; color: #2e7d32; }
+.label.Euclid { background: #fff3e0; color: #ef6c00; }
+.label.Keter { background: #ffebee; color: #c62828; }
+
+.btn-details, .btn-report {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-details {
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-report {
+    background: #666;
+    color: white;
+    margin-left: 8px;
+}
+
+.btn-details:hover, .btn-report:hover {
+    transform: translateY(-2px);
+}
+
+/* 模态框样式 */
+.scp-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.classified {
+    background: #000;
+    color: #000;
+    padding: 2px 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.classified:hover {
+    color: #fff;
+    background: #c00;
+}
+</style><script>
+// 动态内容加载系统
+function loadSection(sectionId) {
+    const contentBlocks = {
+        'database': `
+            <h2 class="block-title">SCP数据库</h2>
+            <div class="search-box">
+                <input type="text" placeholder="输入项目编号或关键词..." id="searchInput">
+                <button onclick="searchSCP()">搜索</button>
+            </div>
+            <div class="scp-table-container" id="scpTable"></div>
+        `,
+        'containment': `
+            <h2 class="block-title">收容协议库</h2>
+            <div class="protocol-list" id="protocolList"></div>
+        `
+    };
+    
+    document.getElementById('dynamicContent').innerHTML = contentBlocks[sectionId];
+    window.scrollTo(0, 0);
+}
+
+// SCP表格生成器
+function generateSCPTable() {
+    const scpData = [
+        {编号: 'SCP-173', 等级: 'Euclid', 状态: '已收容', 分类: '生物实体'},
+        {编号: 'SCP-914', 等级: 'Safe', 状态: '测试中', 分类: '机械装置'},
+        {编号: 'SCP-682', 等级: 'Keter', 状态: '收容失效', 分类: '逆模因'}
+    ];
+
+    let tableHTML = `
+        <table class="scp-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">项目编号 ▼</th>
+                    <th onclick="sortTable(1)">等级 ▼</th>
+                    <th onclick="sortTable(2)">状态 ▼</th>
+                    <th onclick="sortTable(3)">分类 ▼</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    scpData.forEach(item => {
+        tableHTML += `
+            <tr>
+                <td>${item.编号}</td>
+                <td><span class="label ${item.等级}">${item.等级}</span></td>
+                <td>${item.状态}</td>
+                <td>${item.分类}</td>
+                <td>
+                    <button class="btn-details" onclick="showDetail('${item.编号}')">查看详情</button>
+                    <button class="btn-report" onclick="generateReport('${item.编号}')">生成报告</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `</tbody></table>`;
+    document.getElementById('scpTable').innerHTML = tableHTML;
+}
+
+// 详情模态框
+function showDetail(scpNumber) {
+    const modal = document.createElement('div');
+    modal.className = 'scp-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+            <h3>${scpNumber} - 项目档案</h3>
+            <div class="classified-content">
+                <p>项目等级：<span class="classified">███</span></p>
+                <p>特殊收容措施：<span class="classified">需3级权限</span></p>
+                <button onclick="requestAccess('${scpNumber}')">请求临时权限</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+</script>
+
+<style>
+/* 新增交互样式 */
+.scp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.scp-table th, .scp-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.scp-table th {
+    background: #f8f8f8;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.scp-table th:hover {
+    background: #f0f0f0;
+}
+
+.label {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.label.Safe { background: #e8f5e9; color: #2e7d32; }
+.label.Euclid { background: #fff3e0; color: #ef6c00; }
+.label.Keter { background: #ffebee; color: #c62828; }
+
+.btn-details, .btn-report {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-details {
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-report {
+    background: #666;
+    color: white;
+    margin-left: 8px;
+}
+
+.btn-details:hover, .btn-report:hover {
+    transform: translateY(-2px);
+}
+
+/* 模态框样式 */
+.scp-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.classified {
+    background: #000;
+    color: #000;
+    padding: 2px 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.classified:hover {
+    color: #fff;
+    background: #c00;
+}
+</style>
+
+</body>
+</html>

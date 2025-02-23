@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP基金会 - 安全收容协议</title>
+    <style>
+        /* SCP标准样式 */
+        :root {
+            --black-site: #0F0F0F;
+            --red-warning: #FF4444;
+            --terminal-green: #00FF7F;
+            --document-gray: #3A3A3A;
+        }
+
+        body {
+            background: var(--black-site);
+            color: #C0C0C0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 安全边界 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid var(--red-warning);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* 顶部安全警告 */
+        .security-header {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                var(--red-warning) 10px,
+                var(--red-warning) 20px
+            );
+            padding: 15px;
+            margin: -20px -20px 20px;
+            border-bottom: 3px solid var(--red-warning);
+        }
+
+        /* 项目档案容器 */
+        .document-container {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid var(--document-gray);
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,255,127,0.1);
+        }
+
+        /* 项目编号样式 */
+        .scp-number {
+            color: var(--terminal-green);
+            font-size: 2em;
+            text-shadow: 0 0 10px rgba(0,255,127,0.5);
+            border-bottom: 2px solid var(--red-warning);
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* 安全等级标签 */
+        .object-class {
+            position: absolute;
+            right: -15px;
+            top: -15px;
+            background: var(--red-warning);
+            color: black;
+            padding: 10px 20px;
+            transform: rotate(5deg);
+            font-weight: bold;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+        }
+
+        /* 机密文件水印 */
+        .document-container::after {
+            content: "CONFIDENTIAL";
+            position: absolute;
+            opacity: 0.1;
+            font-size: 120px;
+            transform: rotate(-45deg);
+            top: 30%;
+            left: 10%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 终端输入效果 */
+        .terminal-input {
+            color: var(--terminal-green);
+            border-left: 3px solid var(--terminal-green);
+            padding-left: 10px;
+            margin: 15px 0;
+            animation: blink-caret 1s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--terminal-green) }
+        }
+
+        /* 访问拒绝提示 */
+        .access-denied {
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255,0,0,0.1),
+                rgba(255,0,0,0.1) 3px,
+                transparent 3px,
+                transparent 6px
+            );
+            border: 2px solid var(--red-warning);
+            padding: 20px;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div class="security-header">
+        <marquee behavior="scroll" direction="left" scrollamount="10">
+            〖警告〗 未经许可的访问将导致立即终止 ██/██/████ 请立即进行身份验证
+        </marquee>
+    </div>
+
+    <div class="document-container">
+        <div class="object-class">EUCLID</div>
+        <div class="scp-number">SCP-███</div>
+        
+        <div class="terminal-input">
+            > 正在加载项目描述...[23%]
+        </div>
+
+        <h2>■ 项目描述</h2>
+        <p>[数据删除]表现出非常规的███特性。当暴露于[已编辑]时，对象会引发████级现实扭曲事件。</p>
+        <p>收容协议需每72小时轮换值班小组，并至少包含一名D级人员。</p>
+
+        <div class="access-denied">
+            <h3>【4级权限要求】</h3>
+            <p>您的当前权限：2级</p>
+            <p>访问拒绝 - 事件███-Delta记录不可用</p>
+        </div>
+
+        <h2>■ 实验记录</h2>
+        <p><button onclick="revealData()">[输入4级凭证]</button></p>
+        <div id="secret-data" style="display:none">
+            <p>实验███结果：对象在██分钟后突破收容...</p>
+        </div>
+    </div>
+
+    <script>
+        // 终端加载效果
+        function simulateLoading() {
+            const elements = document.querySelectorAll('.terminal-input');
+            elements.forEach(el => {
+                let progress = 0;
+                const timer = setInterval(() => {
+                    progress += Math.random() * 10;
+                    el.textContent = `> 正在加载项目描述...[${Math.min(100, Math.floor(progress))}%]`;
+                    if(progress >= 100) clearInterval(timer);
+                }, 200);
+            });
+        }
+
+        // 机密数据解密
+        function revealData() {
+            document.getElementById('secret-data').style.display = 'block';
+            document.querySelector('.access-denied').innerHTML = `
+                <h3>⚠ 安全协议覆盖警告 ⚠</h3>
+                <p>检测到未授权的访问尝试</p>
+                <p>安保人员已派遣至您的位置</p>
+            `;
+        }
+
+        // 初始化
+        window.onload = () => {
+            simulateLoading();
+            // 添加随机干扰效果
+            setInterval(() => {
+                document.body.style.filter = `hue-rotate(${Math.random()*10}deg)`;
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Launch Pro</title>
+    <style>
+        /* ========== 全屏矩阵雨样式 ========== */
+        :root {
+            --matrix-green: #0fff0f;
+            --bg-black: #000000;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-black);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .matrix-char {
+            position: absolute;
+            color: var(--matrix-green);
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            animation: matrix-fall 1.2s linear forwards;
+            text-shadow: 0 0 8px currentColor;
+        }
+
+        @keyframes matrix-fall {
+            0% { opacity: 0; transform: translateY(-20px); }
+            20% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(100vh); }
+        }
+
+        /* ========== 启动界面样式 ========== */
+        #boot-screen {
+            position: absolute;
+            z-index: 1000; /* 确保在矩阵雨上层 */
+            width: 100%;
+            height: 100%;
+            padding: 2rem;
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0,255,0,0.3);
+        }
+
+        .code-line {
+            white-space: pre-wrap;
+            opacity: 0;
+            font-family: 'Courier New', monospace;
+            animation: typewriter 1s steps(40) forwards,
+                       blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typewriter {
+            from { opacity: 1; width: 0 }
+            to { opacity: 1; width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-right-color: transparent }
+            50% { border-right-color: #00ff00 }
+        }
+    </style>
+</head>
+<body>
+    <!--背景图片容器 -->
+    <div id="matrix-bg" style="
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url('7STQ_1.gif') center/cover no-repeat;
+        filter: brightness(0.4);
+    "></div>
+    <!-- 矩阵雨容器 -->
+    <div id="matrix-container"></div>
+
+    <!-- 启动界面 -->
+    <div id="boot-screen"></div>
+
+    <script>
+        // ========== 矩阵雨逻辑 ==========
+        const chars = 'ABCDEFGH0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+        const container = document.getElementById('matrix-container');
+        let activeCount = 0;
+        const maxActive = 250;
+
+        function createMatrixChar() {
+            if (activeCount >= maxActive) return;
+            
+            const char = document.createElement('div');
+            char.className = `matrix-char`;
+            char.style.left = `${Math.random() * 100}%`;
+            char.style.fontSize = `${12 + Math.random() * 18}px`;
+            char.style.animationDuration = `${0.5 + Math.random() * 0.7}s`;
+            char.textContent = chars[Math.floor(Math.random() * chars.length)];
+            
+            container.appendChild(char);
+            activeCount++;
+
+            char.addEventListener('animationend', () => {
+                char.remove();
+                activeCount--;
+            });
+        }
+
+        function matrixLoop() {
+            for(let i=0; i<4; i++) createMatrixChar();
+            requestAnimationFrame(matrixLoop);
+        }
+
+        // ========== 启动界面逻辑 ==========
+        const bootScreen = document.getElementById('boot-screen');
+        const bootCode = [
+            ">>> INITIALIZING NEURAL LANGUAGE CORE... [OK]",
+            ">>> LOADING GENERATIVE MODELS ████████ 100%",
+            ">>> CONNECTING TO GPU CLUSTER... [COMPILED]",
+            " ",
+            "░█EL▄█M█▒▒S██▄░█▀▄▒█▀▒██P▀▒▄▀▄░█▒▒█",
+            "░W▒▀CO░ET█▒█▒█▄▀░█C▀▒█▄▄░█▀█░▀▄▀",
+            "语言重新设置中……已重定向为【简体中文】",
+            "检测到新访问用户",
+            "缓存中……",
+            "进度显示异常",
+            "欢迎访问",
+            "正在跳转至主界面",
+            "您好，用户",
+            "PS：每个按钮都设计了交互功能，请务必都试试"
+            
+        ];
+
+        let delay = 0;
+        bootCode.forEach((line, index) => {
+            setTimeout(() => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.style.animationDelay = `${delay}s, ${delay + 0.5}s`;
+                div.textContent = line;
+                
+                if(index === bootCode.length - 1) {
+                    div.style.borderRight = "2px solid #00ff00";
+                }
+
+                bootScreen.appendChild(div);
+                delay += index < 4 ? 1.2 : 0.6;
+            }, delay * 1000);
+        });
+
+        // ========== 启动所有动画 ==========
+        matrixLoop();
+        
+        setTimeout(() => {
+            window.location.href = "site.html"; // 12秒后跳转
+        }, 12000);
+
+          // 移动端优化
+          if(/Mobi|Android/i.test(navigator.userAgent)) {
+    matrixConfig = {
+        maxActive: 150,  
+        spawnRate: 3
+                    };
+}
+    </script>
+</body>
+</html>

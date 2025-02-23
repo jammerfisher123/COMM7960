@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scp-terminal">
+<head>
+    <meta charset="UTF-8">
+    <meta name="security-clearance" content="level-4">
+    <title>■■■ SCP基金会 - Site-23 主控终端 ■■■</title>
+    <style>
+        /* 量子加密样式表 - 安全等级4 */
+        :root {
+            --containment-red: #c80000;
+            --biohazard-yellow: #ffd700;
+            --data-stream: #00ff88;
+            --hud-blue: #0099ff;
+            --black-ops: #0a0a12;
+        }
+
+        @font-face {
+            font-family: 'SCP-VCR';
+            src: url('fonts/SCP-VCR-OSD.woff2') format('woff2');
+        }
+
+        body {
+            background: 
+                radial-gradient(ellipse at 80% 20%, 
+                    rgba(10,10,18,0.98) 40%, 
+                    rgba(200,0,0,0.03) 100%),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    transparent 2px,
+                    rgba(0,255,136,0.05) 3px,
+                    rgba(0,255,136,0.05) 4px
+                ),
+                url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M100 15L150 85H50L100 15Z" fill="%23c80000" opacity="0.08"/></svg>');
+            font-family: 'SCP-VCR', monospace;
+            color: var(--data-stream);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 三级安全边界系统 */
+        .security-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 23px,
+                rgba(200,0,0,0.1) 24px
+            );
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 动态权限验证系统 */
+        .access-validation {
+            padding: 1.5rem;
+            border-bottom: 3px solid var(--containment-red);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .access-validation::after {
+            content: "Dr. ████████ 4级访问权限认证成功 ■■■";
+            position: absolute;
+            right: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 25%,
+                rgba(0,255,136,0.1) 50%,
+                transparent 75%
+            );
+            animation: security-scan 8s infinite linear;
+        }
+
+        /* 全息导航矩阵 */
+        .holo-nav-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0.8rem;
+            margin: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid var(--hud-blue);
+        }
+
+        .nav-node {
+            padding: 1.5rem;
+            border: 1px solid rgba(0,153,255,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-node:hover {
+            background: rgba(0,153,255,0.15);
+            transform: perspective(1000px) translateZ(30px);
+            box-shadow: 0 0 40px rgba(0,153,255,0.4);
+        }
+
+        /* 实时收容监控面板 */
+        .containment-status {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.85);
+            border: 2px solid var(--containment-red);
+        }
+
+        .scp-monitor {
+            padding: 1rem;
+            border-left: 4px solid var(--biohazard-yellow);
+            position: relative;
+        }
+
+        .scp-monitor::after {
+            content: "⚠";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--biohazard-yellow);
+        }
+
+        /* 设施状态仪表盘 */
+        .facility-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem;
+            padding: 1rem;
+            background: rgba(10,10,18,0.9);
+        }
+
+        .dashboard-panel {
+            padding: 1.5rem;
+            border: 1px solid var(--hud-blue);
+            min-height: 200px;
+        }
+
+        /* 紧急协议面板 */
+        .emergency-protocol {
+            margin: 2rem;
+            padding: 2rem;
+            background: rgba(200,0,0,0.15);
+            border: 3px solid var(--containment-red);
+            position: relative;
+        }
+
+        @keyframes security-scan {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 数据流终端效果 */
+        .terminal-effect::after {
+            content: "█";
+            animation: cursor-blink 1s infinite;
+        }
+
+        @keyframes cursor-blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="security-grid"></div>
+    
+    <!-- 访问验证头 -->
+    <header class="access-validation">
+        <span class="terminal-effect">SITE-23 主控终端 [版本 23.12.7]</span>
+    </header>
+
+    <!-- 主导航矩阵 -->
+    <nav class="holo-nav-matrix">
+        <div class="nav-node">1号设施</div>
+        <div class="nav-node">2号设施</div>
+        <div class="nav-node">3号设施</div>
+        <div class="nav-node">主要办公区</div>
+        <div class="nav-node">出入口</div>
+        <div class="nav-node">设施监控中心</div>
+        <div class="nav-node">实验日志系统</div>
+        <div class="nav-node">安保中心</div>
+    </nav>
+
+    <!-- 实时收容监控 -->
+    <section class="containment-status">
+        <div class="scp-monitor">
+            <h3>SCP-049</h3>
+            <p>收容状态：稳定</p>
+            <progress value="85" max="100"></progress>
+        </div>
+        <div class="scp-monitor">
+            <h3>SCP-682</h3>
+            <p>收容状态：危险</p>
+            <progress value="43" max="100"></progress>
+        </div>
+        <div class="scp-monitor">
+            <h3>SCP-096</h3>
+            <p>收容状态：警告</p>
+            <progress value="67" max="100"></progress>
+        </div>
+        <div class="scp-monitor">
+            <h3>SCP-173</h3>
+            <p>收容状态：紧急</p>
+            <progress value="92" max="100"></progress>
+        </div>
+    </section>
+
+    <!-- 设施状态仪表盘 -->
+    <section class="facility-dashboard">
+        <div class="dashboard-panel">
+            <h3>电力系统</h3>
+            <meter value="0.8">80%</meter>
+            <p>备用电源：在线</p>
+        </div>
+        <div class="dashboard-panel">
+            <h3>气闭系统</h3>
+            <meter value="0.95">95%</meter>
+            <p>压力等级：4级</p>
+        </div>
+        <div class="dashboard-panel">
+            <h3>人员定位</h3>
+            <meter value="0.6">60%</meter>
+            <p>在岗率：83%</p>
+        </div>
+    </section>
+
+    <!-- 紧急协议面板 -->
+    <section class="emergency-protocol">
+        <h2>紧急协议 ECP-23</h2>
+        <ul>
+            <li>CK级现实重构情景应对方案</li>
+            <li>XK级世界末日情景应对方案</li>
+            <li>AK级精神污染净化协议</li>
+        </ul>
+    </section>
+
+    <script>
+        // 实时数据更新系统
+        setInterval(() => {
+            const meters = document.querySelectorAll('meter, progress');
+            meters.forEach(m => {
+                const newValue = Math.min(Math.max(
+                    parseFloat(m.value) + (Math.random() - 0.5) * 0.1, 
+                    0
+                ), 1);
+                m.value = newValue;
+            });
+        }, 3000);
+
+        // 导航节点交互系统
+        document.querySelectorAll('.nav-node').forEach(node => {
+            node.addEventListener('click', () => {
+                node.style.borderColor = `hsl(${Math.random()*360}, 70%, 50%)`;
+                setTimeout(() => {
+                    node.style.borderColor = 'rgba(0,153,255,0.3)';
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
